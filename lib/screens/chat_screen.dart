@@ -113,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   Future<Map<String, dynamic>?> fetchSmartphoneRecommendation(String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.204.215:4000/api/query'),
+        Uri.parse('http://192.168.42.120:4000/api/query'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"query": query}),
       );
@@ -134,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Phone Advisor"),
+        title: const Text("AI Phone Advisor"),
         elevation: 0,
         backgroundColor: Colors.transparent,
         titleTextStyle: TextStyle(
