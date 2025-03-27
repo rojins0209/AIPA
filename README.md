@@ -16,14 +16,6 @@
 
 ---
 
-## Screenshots
-
-*(Add screenshots here if available)*  
-- Splash Screen:   
-- Chat Interface: ![alt text](<Chat Interface.jpg>)
-- Recommendations: ![alt text](<Recommendations.jpg>)
-
----
 
 ## Prerequisites
 
