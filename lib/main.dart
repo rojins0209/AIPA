@@ -118,7 +118,7 @@ class MyApp extends StatelessWidget {
         iconColor: Colors.black, // Black icons
       ),
       dividerTheme: const DividerThemeData(
-        color: const Color(0xFFE0E0E0), // Light grey divider
+        color: Color(0xFFE0E0E0), // Light grey divider
       ),
     );
   }
@@ -140,9 +140,9 @@ class MyApp extends StatelessWidget {
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
-        backgroundColor: const Color(0xFF1D1D1F),
-        iconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: const TextStyle(
+        backgroundColor: Color(0xFF1D1D1F),
+        iconTheme: IconThemeData(color: Colors.white),
+        titleTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.w600,
@@ -192,15 +192,15 @@ class MyApp extends StatelessWidget {
         ),
       ),
       dialogTheme: const DialogTheme(
-        backgroundColor: const Color(0xFF2C2C2E),
+        backgroundColor: Color(0xFF2C2C2E),
         titleTextStyle: TextStyle(
             color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
-        contentTextStyle: const TextStyle(color: Colors.grey),
+        contentTextStyle: TextStyle(color: Colors.grey),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: const Color(0xFF2C2C2E),
-        modalBackgroundColor: const Color(0xFF2C2C2E),
-        shape: const RoundedRectangleBorder(
+        backgroundColor: Color(0xFF2C2C2E),
+        modalBackgroundColor: Color(0xFF2C2C2E),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
@@ -209,7 +209,7 @@ class MyApp extends StatelessWidget {
         iconColor: Colors.white,
       ),
       dividerTheme: const DividerThemeData(
-        color: const Color(0xFF3A3A3C),
+        color: Color(0xFF3A3A3C),
       ),
     );
   }

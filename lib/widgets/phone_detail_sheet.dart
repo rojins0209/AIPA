@@ -5,7 +5,7 @@ import '../models/phone_model.dart'; // Import your PhoneModel
 class PhoneDetailSheet extends StatelessWidget {
   final PhoneModel phone;
 
-  const PhoneDetailSheet({Key? key, required this.phone}) : super(key: key);
+  const PhoneDetailSheet({super.key, required this.phone});
 
   // Helper function to launch URLs
   Future<void> _launchUrl(BuildContext context, String? urlString, String buttonLabel) async {

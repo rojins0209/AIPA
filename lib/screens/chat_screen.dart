@@ -21,8 +21,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   late AnimationController _animationController;
-  List<PhoneModel> _recommendedPhones = [];
-  bool _showPhoneGrid = false;
 
   @override
   void initState() {
@@ -70,9 +68,9 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     setState(() {
       _messages.add({'sender': 'user', 'text': text});
       _isLoading = true;
-      _showPhoneGrid = false;
     });
 
+    _controller.clear(); // Clear input immediately
     _scrollToBottom();
 
     try {
@@ -80,18 +78,18 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
       setState(() {
         _isLoading = false;
         if (response != null) {
-          _messages.add({'sender': 'bot', 'text': response['response']});
-          _recommendedPhones = (response['phones'] as List)
-              .map((phoneJson) => PhoneModel.fromJson(phoneJson))
-              .toList();
-          _showPhoneGrid = _recommendedPhones.isNotEmpty;
+          _messages.add({
+            'sender': 'bot', 
+            'text': _cleanResponse(response['response']),
+            'phones': (response['phones'] as List)
+                .map((phoneJson) => PhoneModel.fromJson(phoneJson))
+                .toList(),
+          });
         } else {
           _messages.add({
             'sender': 'bot',
-            'text': "Sorry, I couldn’t find any matches. Try again?",
+            'text': "Sorry, I couldn't find any matches. Try again?",
           });
-          _recommendedPhones = [];
-          _showPhoneGrid = false;
         }
       });
     } catch (e) {
@@ -101,28 +99,29 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
           'sender': 'bot',
           'text': "Something went wrong. Please try again.",
         });
-        _recommendedPhones = [];
-        _showPhoneGrid = false;
       });
     } finally {
       _scrollToBottom();
-      _controller.clear();
     }
+  }
+
+  String _cleanResponse(String text) {
+    // Remove IDs like (ID: abc123)
+    String cleaned = text.replaceAll(RegExp(r'\(ID: \w+\)'), "");
+    // Remove markdown bold/italic markers
+    cleaned = cleaned.replaceAllMapped(RegExp(r'(\*\*|\*)(.*?)\1'), 
+      (match) => match.group(2) ?? "");
+    return cleaned;
   }
 
   Future<Map<String, dynamic>?> fetchSmartphoneRecommendation(String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.42.120:4000/api/query'),
+        Uri.parse('http://192.168.1.11:4000/api/query'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"query": query}),
       );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        return null;
-      }
+      return response.statusCode == 200 ? jsonDecode(response.body) : null;
     } catch (e) {
       return null;
     }
@@ -137,71 +136,88 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
         title: const Text("AI Phone Advisor"),
         elevation: 0,
         backgroundColor: Colors.transparent,
-        titleTextStyle: TextStyle(
-          color: theme.textTheme.titleLarge?.color,
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
-        ),
       ),
-      body: Container(
-        color: theme.colorScheme.background,
-        child: Column(
-          children: [
-            Expanded(
-              child: _showPhoneGrid ? _buildPhoneGrid() : _buildChatList(),
-            ),
-            if (_isLoading)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: SpinKitFadingCircle(
-                  color: const Color(0xFF9575CD), // Soft purple
-                  size: 20,
-                ),
-              ),
-            _buildInputField(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputField() {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-      color: theme.colorScheme.surface.withOpacity(0.9),
-      child: Row(
+      body: Column(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: "Ask about a phone...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-                hintStyle: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w400),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              ),
-              style: const TextStyle(fontSize: 16),
-              onSubmitted: _sendMessage,
-              textInputAction: TextInputAction.send,
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(20),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                final isUser = message['sender'] == 'user';
+
+                return Column(
+                  children: [
+                    // Message Bubble
+                    Align(
+                      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isUser ? const Color(0xFF9575CD) : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          message['text'],
+                          style: TextStyle(
+                            color: isUser ? Colors.white : Colors.black87,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Phone Recommendations (if any)
+                    if (message['phones'] != null && 
+                        (message['phones'] as List<PhoneModel>).isNotEmpty)
+                      _buildPhoneRow(message['phones']),
+                  ],
+                );
+              },
             ),
           ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => _sendMessage(_controller.text),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF9575CD), // Soft purple
+          if (_isLoading)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: SpinKitFadingCircle(
+                color: const Color(0xFF9575CD),
+                size: 20,
               ),
-              child: const Icon(Icons.send, color: Colors.white, size: 20),
+            ),
+          // Input Field
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            color: theme.colorScheme.surface.withOpacity(0.9),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Ask about phones...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                    ),
+                    onSubmitted: _sendMessage,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Colors.white),
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFF9575CD),
+                    shape: const CircleBorder(),
+                  ),
+                  onPressed: () => _sendMessage(_controller.text),
+                ),
+              ],
             ),
           ),
         ],
@@ -209,86 +225,40 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildChatList() {
-    final theme = Theme.of(context);
-
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(20),
-      itemCount: _messages.length,
-      itemBuilder: (context, index) {
-        final message = _messages[index];
-        final isUser = message['sender'] == 'user';
-
-        return Align(
-          alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-              decoration: BoxDecoration(
-                color: isUser ? const Color(0xFF9575CD) : Colors.grey[200],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                message['text'],
-                style: TextStyle(
-                  color: isUser ? Colors.white : Colors.black87,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
+  Widget _buildPhoneRow(List<PhoneModel> phones) {
+    return SizedBox(
+      height: 180,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: phones.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: index == 0 ? 0 : 8,
+              right: 8,
+              top: 8,
+            ),
+            child: SizedBox(
+              width: 140,
+              child: PhoneBentoCard(
+                phone: phones[index],
+                onTap: () => _showPhoneDetails(phones[index]),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildPhoneGrid() {
-    final theme = Theme.of(context);
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Text(
-            "Recommended Phones (${_recommendedPhones.length})",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: theme.textTheme.titleLarge?.color?.withOpacity(0.9),
-            ),
-          ),
-        ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: _recommendedPhones.length,
-            itemBuilder: (context, index) {
-              return PhoneBentoCard(
-                phone: _recommendedPhones[index],
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) => PhoneDetailSheet(phone: _recommendedPhones[index]),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
+  void _showPhoneDetails(PhoneModel phone) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => PhoneDetailSheet(phone: phone),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
     );
   }
 }

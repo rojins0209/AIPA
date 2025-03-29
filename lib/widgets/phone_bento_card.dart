@@ -109,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen>
       String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.42.120:4000/api/query'),
+        Uri.parse('http://192.168.1.11:4000/api/query'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"query": query}),
       );
@@ -186,8 +186,8 @@ class _ChatScreenState extends State<ChatScreen>
           FloatingActionButton(
             // Use FloatingActionButton for Material Design
             onPressed: () => _sendMessage(_controller.text),
-            child: const Icon(Icons.send),
-            shape: const CircleBorder(), // Make it a circle
+            shape: const CircleBorder(),
+            child: const Icon(Icons.send), // Make it a circle
           ),
         ],
       ),
