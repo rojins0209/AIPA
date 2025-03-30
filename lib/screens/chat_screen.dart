@@ -70,7 +70,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
       _isLoading = true;
     });
 
-    _controller.clear(); // Clear input immediately
+    _controller.clear();
     _scrollToBottom();
 
     try {
@@ -79,7 +79,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
         _isLoading = false;
         if (response != null) {
           _messages.add({
-            'sender': 'bot', 
+            'sender': 'bot',
             'text': _cleanResponse(response['response']),
             'phones': (response['phones'] as List)
                 .map((phoneJson) => PhoneModel.fromJson(phoneJson))
@@ -106,18 +106,16 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   }
 
   String _cleanResponse(String text) {
-    // Remove IDs like (ID: abc123)
     String cleaned = text.replaceAll(RegExp(r'\(ID: \w+\)'), "");
-    // Remove markdown bold/italic markers
-    cleaned = cleaned.replaceAllMapped(RegExp(r'(\*\*|\*)(.*?)\1'), 
-      (match) => match.group(2) ?? "");
+    cleaned = cleaned.replaceAllMapped(RegExp(r'(\*\*|\*)(.*?)\1'),
+        (match) => match.group(2) ?? "");
     return cleaned;
   }
 
   Future<Map<String, dynamic>?> fetchSmartphoneRecommendation(String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.11:4000/api/query'),
+        Uri.parse('http://13.201.81.252:4000/api/query'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"query": query}),
       );
@@ -149,28 +147,21 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                 final isUser = message['sender'] == 'user';
 
                 return Column(
+                  crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
-                    // Message Bubble
-                    Align(
-                      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isUser ? const Color(0xFF9575CD) : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          message['text'],
-                          style: TextStyle(
-                            color: isUser ? Colors.white : Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.all(16),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.75,
                       ),
+                      decoration: BoxDecoration(
+                        color: isUser ? const Color(0xFF9575CD) : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: _formatMessageText(message['text'], isUser),
                     ),
-                    // Phone Recommendations (if any)
-                    if (message['phones'] != null && 
+                    if (message['phones'] != null &&
                         (message['phones'] as List<PhoneModel>).isNotEmpty)
                       _buildPhoneRow(message['phones']),
                   ],
@@ -186,7 +177,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                 size: 20,
               ),
             ),
-          // Input Field
           Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
             color: theme.colorScheme.surface.withOpacity(0.9),
@@ -225,21 +215,61 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     );
   }
 
+  Widget _formatMessageText(String text, bool isUser) {
+    final paragraphs = text.split('\n\n');
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: paragraphs.map((paragraph) {
+        if (paragraph.contains('\n-') || paragraph.contains('\n*')) {
+          final items = paragraph.split('\n').where((item) => item.trim().isNotEmpty).toList();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: items.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                item.trim().startsWith('-') || item.trim().startsWith('*')
+                    ? '• ${item.trim().substring(1).trim()}'
+                    : item.trim(),
+                style: TextStyle(
+                  color: isUser ? Colors.white : Colors.black87,
+                  fontSize: 16,
+                ),
+              ),
+            )).toList(),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            paragraph.trim(),
+            style: TextStyle(
+              color: isUser ? Colors.white : Colors.black87,
+              fontSize: 16,
+              height: 1.4,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildPhoneRow(List<PhoneModel> phones) {
     return SizedBox(
-      height: 180,
+      height: 240,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: phones.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.only(
-              left: index == 0 ? 0 : 8,
-              right: 8,
-              top: 8,
+              left: index == 0 ? 0 : 12,
+              right: 12,
+              top: 12,
+              bottom: 12,
             ),
             child: SizedBox(
-              width: 140,
+              width: 180,
               child: PhoneBentoCard(
                 phone: phones[index],
                 onTap: () => _showPhoneDetails(phones[index]),

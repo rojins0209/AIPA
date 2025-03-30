@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:scrapy/screens/splash_screen.dart';
+import 'package:AIPA/screens/splash_screen.dart';
 // Corrected import path
 
 void main() {

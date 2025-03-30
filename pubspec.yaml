@@ -1,4 +1,4 @@
-name: scrapy
+name: AIPA
 description: "A new Flutter project."
 publish_to: 'none'
 
@@ -20,6 +20,7 @@ dependencies:
   path_provider: ^2.1.5
   image: ^4.5.3
   youtube_player_flutter: ^9.1.1
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
