@@ -19,6 +19,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
   bool _isLoading = false;
   late AnimationController _animationController;
 
@@ -29,11 +30,6 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat();
-
-    _messages.add({
-      'sender': 'bot',
-      'text': "Hello! How can I assist you in finding a smartphone today?",
-    });
 
     if (widget.initialQuery.isNotEmpty) {
       Future.delayed(const Duration(milliseconds: 300), () {
@@ -47,6 +43,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     _animationController.dispose();
     _scrollController.dispose();
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -107,8 +104,10 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
 
   String _cleanResponse(String text) {
     String cleaned = text.replaceAll(RegExp(r'\(ID: \w+\)'), "");
-    cleaned = cleaned.replaceAllMapped(RegExp(r'(\*\*|\*)(.*?)\1'),
-        (match) => match.group(2) ?? "");
+    cleaned = cleaned.replaceAllMapped(
+      RegExp(r'(\*\*|\*)(.*?)\1'),
+      (match) => match.group(2) ?? "",
+    );
     return cleaned;
   }
 
@@ -141,9 +140,42 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.all(20),
-              itemCount: _messages.length,
+              itemCount: _messages.isEmpty ? 1 : _messages.length + 1,
               itemBuilder: (context, index) {
-                final message = _messages[index];
+                if (index == 0 && _messages.isEmpty) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          "What can I help with?",
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _buildSuggestionChip("Best phones under \$500"),
+                          _buildSuggestionChip("Phones with 5G"),
+                          _buildSuggestionChip("Compare iPhone vs Samsung"),
+                          _buildSuggestionChip("Latest smartphones"),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                final messageIndex = _messages.isEmpty ? -1 : index - 1;
+                if (messageIndex < 0) return const SizedBox.shrink();
+
+                final message = _messages[messageIndex];
                 final isUser = message['sender'] == 'user';
 
                 return Column(
@@ -179,21 +211,52 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
             ),
           Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-            color: theme.colorScheme.surface.withOpacity(0.9),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withOpacity(0.9),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.4),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
                     decoration: InputDecoration(
                       hintText: "Ask about phones...",
-                      border: OutlineInputBorder(
+                      border:  OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
+                      filled: true, // This will use the fillColor from inputDecorationTheme
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      suffixIcon: _controller.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.clear,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
+                              ),
+                              onPressed: () {
+                                _controller.clear();
+                                _focusNode.unfocus();
+                              },
+                            )
+                          : null,
+                    ),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface, // Use onSurface for text color
                     ),
                     onSubmitted: _sendMessage,
                   ),
@@ -215,9 +278,34 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     );
   }
 
+  Widget _buildSuggestionChip(String label) {
+    return GestureDetector(
+      onTap: () {
+        _controller.text = label;
+        _focusNode.requestFocus();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFF9C27B0), width: 1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Color(0xFF9C27B0),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _formatMessageText(String text, bool isUser) {
     final paragraphs = text.split('\n\n');
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: paragraphs.map((paragraph) {

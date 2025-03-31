@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:AIPA/screens/splash_screen.dart';
-// Corrected import path
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
@@ -25,9 +24,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Smartphone Finder',
-      theme: _buildLightTheme(), //  Use a light theme
-      darkTheme: _buildDarkTheme(), // Keep the dark theme
-      themeMode: ThemeMode.system, // Set default theme mode to light
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
+      themeMode: ThemeMode.system,
       home: const SplashScreen(),
     );
   }
@@ -35,24 +34,24 @@ class MyApp extends StatelessWidget {
   ThemeData _buildLightTheme() {
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF9C27B0), //  purple
-        primary: const Color(0xFF9C27B0), //  primary purple
-        secondary: const Color(0xFFE91E63), //  secondary pink
-        background: Colors.white, //  light background
-        surface: Colors.white, //  white surface
-        onPrimary: Colors.white, // White text on primary
-        onSecondary: Colors.white, // White text on secondary
-        onBackground: Colors.black, // Black text on background
-        onSurface: Colors.black, // Black text on surface
+        seedColor: const Color(0xFF9C27B0),
+        primary: const Color(0xFF9C27B0),
+        secondary: const Color(0xFFE91E63),
+        background: Colors.white,
+        surface: Colors.white,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onBackground: Colors.black,
+        onSurface: Colors.black,
       ),
-      scaffoldBackgroundColor: Colors.white, //  light background
+      scaffoldBackgroundColor: Colors.white,
       appBarTheme: const AppBarTheme(
-        elevation: 0, // No shadow for clean look
+        elevation: 0,
         centerTitle: true,
-        backgroundColor: Colors.white, //  light appbar
-        iconTheme: IconThemeData(color: Colors.black), // Black icons
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black),
         titleTextStyle: TextStyle(
-          color: Colors.black, // Black title
+          color: Colors.black,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
@@ -61,22 +60,22 @@ class MyApp extends StatelessWidget {
         titleLarge: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w600,
-          color: Colors.black, // Black title
+          color: Colors.black,
         ),
-        bodyLarge: TextStyle(fontSize: 16, color: Colors.black), // Black body
-        bodyMedium: TextStyle(fontSize: 14, color: Colors.grey), // Grey medium body
+        bodyLarge: TextStyle(fontSize: 16, color: Colors.black),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.grey),
       ),
       cardTheme: CardTheme(
         elevation: 1,
-        color: Colors.white, // White cards
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFF3E5F5), // Light purple input background
+        fillColor: Colors.white, // Light mode: white background
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide.none, // No border
+          borderSide: BorderSide.none,
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -86,8 +85,8 @@ class MyApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF9C27B0), // Purple button
-          foregroundColor: Colors.white, // White text
+          backgroundColor: const Color(0xFF9C27B0),
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
@@ -97,28 +96,28 @@ class MyApp extends StatelessWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFF9C27B0), // Purple text button
+          foregroundColor: const Color(0xFF9C27B0),
         ),
       ),
       dialogTheme: const DialogTheme(
-        backgroundColor: Colors.white, // White dialog
+        backgroundColor: Colors.white,
         titleTextStyle: TextStyle(
-            color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18), // Black title
-        contentTextStyle: TextStyle(color: Colors.grey), // Grey content
+            color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18),
+        contentTextStyle: TextStyle(color: Colors.grey),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: Colors.white, // White bottom sheet
+        backgroundColor: Colors.white,
         modalBackgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
       listTileTheme: const ListTileThemeData(
-        textColor: Colors.black, // Black text
-        iconColor: Colors.black, // Black icons
+        textColor: Colors.black,
+        iconColor: Colors.black,
       ),
       dividerTheme: const DividerThemeData(
-        color: Color(0xFFE0E0E0), // Light grey divider
+        color: Color(0xFFE0E0E0),
       ),
     );
   }
@@ -126,17 +125,17 @@ class MyApp extends StatelessWidget {
   ThemeData _buildDarkTheme() {
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF9C27B0), // Purple
+        seedColor: const Color(0xFF9C27B0),
         primary: const Color(0xFF9C27B0),
         secondary: const Color(0xFFE91E63),
         background: const Color(0xFF121212),
-        surface: const Color(0xFF2C2C2E),
+        surface: const Color(0xFF303030),
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onBackground: Colors.white,
         onSurface: Colors.white,
       ),
-      scaffoldBackgroundColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: const Color.fromRGBO(18, 18, 18, 1),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -152,7 +151,7 @@ class MyApp extends StatelessWidget {
         titleLarge: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
         bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
         bodyMedium: TextStyle(fontSize: 14, color: Colors.grey),
@@ -164,7 +163,7 @@ class MyApp extends StatelessWidget {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF3A3A3C),
+        fillColor: const Color(0xFF2a2a2a), // Dark mode: dark grey background
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(28),
           borderSide: BorderSide.none,
@@ -177,7 +176,7 @@ class MyApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF9C27B0), // Purple
+          backgroundColor: const Color(0xFF9C27B0),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
@@ -188,7 +187,7 @@ class MyApp extends StatelessWidget {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFF9C27B0), // Purple
+          foregroundColor: const Color(0xFF9C27B0),
         ),
       ),
       dialogTheme: const DialogTheme(
@@ -214,4 +213,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

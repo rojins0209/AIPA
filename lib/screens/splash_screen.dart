@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'chat_screen.dart'; // Adjusted to a relative path assuming chat_screen.dart is in the same folder
+import 'chat_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,32 +10,41 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
-    // Initialize animation controller for a 1-second fade-in and fade-out
+    
+    // Animation controller with slightly longer duration for smoother effect
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000), // 1 second total
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    // Define fade animation: 0 to 1 (fade in), then back to 0 (fade out)
-    _fadeAnimation = TweenSequence<double>([
+    // Scale animation - subtle grow effect
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutQuint));
+        
+    // Opacity animation - fade in, hold, then fade out
+    _opacityAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0, end: 1).chain(CurveTween(curve: Curves.easeIn)),
-        weight: 50, // Fade in for first half
+        weight: 30, // Faster fade in
+      ),
+      TweenSequenceItem(
+        tween: ConstantTween<double>(1), // Hold at full opacity
+        weight: 40,
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: Curves.easeOut)),
-        weight: 50, // Fade out for second half
+        weight: 30, // Fade out at the end
       ),
     ]).animate(_controller);
 
-    // Start the animation
+    // Start animation and navigate when complete
     _controller.forward().then((_) {
-      // Navigate to ChatScreen after animation completes
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
@@ -46,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 1000), // Smooth 0.5s transition
+          transitionDuration: const Duration(milliseconds: 800),
         ),
       );
     });
@@ -61,31 +70,80 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color((0xFF9C27B0)), // Blue shade
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Uncomment if you have a logo
-              // Image.asset(
-              //   'assets/logo.png',
-              //   width: 120,
-              //   height: 120,
-              // ),
-              // const SizedBox(height: 20),
-              const Text(
-                'AIPA',
-                style: TextStyle(
-                  fontSize: 100,
-                  fontFamily: 'pacifico',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
+      // Clean gradient background
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF9C27B0), Color(0xFF673AB7)],
+          ),
+        ),
+        child: Center(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _opacityAnimation.value,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: child,
                 ),
-              ),
-            ],
+              );
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Minimalist logo/icon using Container instead of Image
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "AI",
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF9C27B0),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // App name with modern typography
+                const Text(
+                  "AIPA",
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w300, // Lighter weight for modern look
+                    letterSpacing: 4, // Increased letter spacing
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Tagline for additional modern touch
+                const Text(
+                  "Your AI Phone Advisor",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w300,
+                    letterSpacing: 1.5,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
