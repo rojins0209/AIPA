@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Smartphone Finder',
       theme: _buildLightTheme(), //  Use a light theme
       darkTheme: _buildDarkTheme(), // Keep the dark theme
-      themeMode: ThemeMode.light, // Set default theme mode to light
+      themeMode: ThemeMode.system, // Set default theme mode to light
       home: const SplashScreen(),
     );
   }
