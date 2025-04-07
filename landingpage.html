@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIPA - AI Phone Advisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111111;
+        color: #ffffff;
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      
+      .container {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      
+      header {
+        padding: 40px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .logo-section {
+        display: flex;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 2.5rem;
+        font-weight: 500;
+        letter-spacing: 1px;
+        margin-right: 20px;
+      }
+      
+      .tagline {
+        font-size: 1rem;
+        font-weight: 300;
+        color: #999;
+        max-width: 220px;
+        line-height: 1.3;
+      }
+      
+      .nav-links {
+        display: flex;
+        gap: 40px;
+      }
+      
+      .nav-link {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 1.25rem;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+      
+      .nav-link:hover {
+        opacity: 1;
+      }
+      
+      .hero {
+        padding: 150px 60px;
+      }
+      
+      .hero-content {
+        max-width: 1000px;
+      }
+      
+      h1 {
+        font-size: 5.5rem;
+        font-weight: 600;
+        letter-spacing: -1.5px;
+        margin-bottom: 40px;
+        line-height: 1.1;
+      }
+      
+      .hero-text {
+        font-size: 1.6rem;
+        font-weight: 300;
+        color: #cccccc;
+        margin-bottom: 60px;
+        max-width: 800px;
+        line-height: 1.4;
+      }
+      
+      .cta {
+        display: inline-block;
+        padding: 18px 42px;
+        background-color: #ffffff;
+        color: #111111;
+        border-radius: 2px;
+        font-weight: 500;
+        font-size: 1.25rem;
+        text-decoration: none;
+        transition: all 0.3s;
+      }
+      
+      .cta:hover {
+        background-color: #e6e6e6;
+      }
+      
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .feature {
+        padding: 60px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .feature:last-child {
+        border-right: none;
+      }
+      
+      .feature-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 25px;
+        color: #ffffff;
+      }
+      
+      .feature-text {
+        font-size: 1.15rem;
+        color: #999999;
+        font-weight: 300;
+        line-height: 1.6;
+      }
+      
+      footer {
+        padding: 40px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        font-size: 1rem;
+        color: #777777;
+      }
+      
+      footer a {
+        color: #999999;
+        text-decoration: none;
+      }
+      
+      footer a:hover {
+        color: #ffffff;
+      }
+      
+      .social-links {
+        display: flex;
+        gap: 30px;
+      }
+      
+      @media (max-width: 992px) {
+        body {
+          font-size: 16px;
+        }
+        
+        header {
+          padding: 30px 40px;
+        }
+        
+        .logo {
+          font-size: 2rem;
+        }
+        
+        h1 {
+          font-size: 4rem;
+        }
+        
+        .hero-text {
+          font-size: 1.4rem;
+        }
+        
+        .feature {
+          padding: 40px;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 20px;
+        }
+        
+        .nav-links {
+          gap: 20px;
+        }
+        
+        h1 {
+          font-size: 3.5rem;
+        }
+        
+        .hero-text {
+          font-size: 1.3rem;
+        }
+        
+        .features {
+          grid-template-columns: 1fr;
+        }
+        
+        .feature {
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 40px;
+        }
+        
+        .feature:last-child {
+          border-bottom: none;
+        }
+        
+        footer {
+          flex-direction: column;
+          gap: 20px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo-section">
+          <div class="logo">AIPA</div>
+          <div class="tagline">AI-powered smartphone advisor</div>
+        </div>
+        <div class="nav-links">
+          <a href="http://13.201.81.252/" class="nav-link">Demo</a>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-content">
+          <h1>AI Phone Advisor</h1>
+          <p class="hero-text">Discover the perfect smartphone tailored to your unique needs through our advanced AI system.</p>
+          <a href="http://13.201.81.252/" class="cta" target="_blank">Try the Demo</a>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature">
+          <h3 class="feature-title">Machine Learning</h3>
+          <p class="feature-text">Trained to understand your needs and deliver precise phone suggestions based on your preferences and usage patterns.</p>
+        </div>
+        <div class="feature">
+          <h3 class="feature-title">Real-Time Scraping</h3>
+          <p class="feature-text">Data sourced live from trusted platforms, providing the most up-to-date specifications, reviews, and pricing information.</p>
+        </div>
+        <div class="feature">
+          <h3 class="feature-title">Smart & Simple</h3>
+          <p class="feature-text">Skip the endless research. Our AI analyzes thousands of options to find your perfect match in seconds.</p>
+        </div>
+      </section>
+
+      <footer>
+        <div>© 2025 AIPA</div>
+        <div class="social-links">
+          <a href="https://github.com/rojins0209" target="_blank">Built by Rojins S Martin</a>
+          <a href="https://github.com/rojins0209/AIPA" target="_blank">GitHub Repo</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
