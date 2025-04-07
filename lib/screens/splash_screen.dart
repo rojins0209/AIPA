@@ -126,7 +126,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   "AIPA",
                   style: TextStyle(
                     fontSize: 48,
-                    fontWeight: FontWeight.w300, // Lighter weight for modern look
+                    fontWeight: FontWeight.w900, // Lighter weight for modern look
                     letterSpacing: 4, // Increased letter spacing
                     color: Colors.white,
                   ),
